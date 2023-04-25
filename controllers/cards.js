@@ -13,7 +13,7 @@ module.exports.createCard = (req, res) => {
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
-module.exports.deleteCardrByID = (req, res) => {
+module.exports.deleteCardByID = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then(() => {
       // if (!user) {
