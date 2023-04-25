@@ -10,6 +10,20 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
+app.use((req, res, next) => {
+  req.user = {
+    _id: '5d8b8592978f8bd833ca8133', // вставить ID созданного пользователя
+  };
+
+  next();
+});
+
+app.use('/users', require('./routes/users'));
+
+app.use('*', (req, res) => {
+  res.status(404).send({ message: 'Страница не найдена' });
+});
+
 app.listen(PORT, () => {
   console.log(`Server stared on port ${PORT}!`);
 });

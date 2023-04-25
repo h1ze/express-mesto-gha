@@ -9,12 +9,17 @@ module.exports.getUsers = (req, res) => {
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.status(201).send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
 module.exports.getUserByID = (req, res) => {
   User.findById(req.params.userId)
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (!user) {
+        res.status(404).send({ message: 'Не найден пользователь' });
+      }
+      res.send({ data: user });
+    })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
