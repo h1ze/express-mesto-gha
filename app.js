@@ -22,8 +22,8 @@ app.use('*', (req, res) => {
   res.status(404).send({ message: 'Страница не найдена' });
 });
 
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
+app.use(require('./routes/users'));
+app.use(require('./routes/cards'));
 
 app.listen(PORT, () => {
   console.log(`Server stared on port ${PORT}!`);
