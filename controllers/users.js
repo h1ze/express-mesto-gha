@@ -39,7 +39,7 @@ module.exports.getUserByID = (req, res) => {
 module.exports.updateUser = ((req, res) => {
   // обновим имя найденного по _id пользователя
   const { name, about, avatar } = req.body;
-  User.findByIdAndUpdate(req.params.userId, { name, about, avatar })
+  User.findByIdAndUpdate(req.user._id, { name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.message.includes('failed')) {
