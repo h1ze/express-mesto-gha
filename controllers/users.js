@@ -38,13 +38,30 @@ module.exports.getUserByID = (req, res) => {
 
 module.exports.updateUser = ((req, res) => {
   // обновим имя найденного по _id пользователя
-  const { name, about, avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about, avatar }, {
+  const { name, about } = req.body;
+  User.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true, // данные будут валидированы перед изменением
     upsert: true, // если пользователь не найден, он будет создан
   })
     .then((user) => res.send({ data: { name: user.name, about: user.about } }))
+    .catch((err) => {
+      if (err.message.includes('failed')) {
+        res.status(400).send({ message: err.message });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
+});
+
+module.exports.updateAvatar = ((req, res) => {
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(req.user._id, { avatar }, {
+    new: true, // обработчик then получит на вход обновлённую запись
+    runValidators: true, // данные будут валидированы перед изменением
+    upsert: true, // если пользователь не найден, он будет создан
+  })
+    .then((user) => res.send({ data: { avatar: user.avatar } }))
     .catch((err) => {
       if (err.message.includes('failed')) {
         res.status(400).send({ message: err.message });
