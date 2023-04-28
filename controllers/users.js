@@ -44,7 +44,7 @@ module.exports.updateUser = ((req, res) => {
     runValidators: true, // данные будут валидированы перед изменением
     upsert: true, // если пользователь не найден, он будет создан
   })
-    .then((user) => res.send({ data: { name: user.name, about: user.about } }))
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.message.includes('failed')) {
         res.status(400).send({ message: err.message });
