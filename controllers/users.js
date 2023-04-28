@@ -27,5 +27,25 @@ module.exports.getUserByID = (req, res) => {
       }
       res.send({ data: user });
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.message.includes('failed')) {
+        res.status(400).send({ message: err.message });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
 };
+
+module.exports.updateUser = ((req, res) => {
+  // обновим имя найденного по _id пользователя
+  const { name, about, avatar } = req.body;
+  User.findByIdAndUpdate(req.params.userId, { name, about, avatar })
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.message.includes('failed')) {
+        res.status(400).send({ message: err.message });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
+});
