@@ -10,6 +10,7 @@ module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link })
     .then((card) => card.populate('owner'))
+    .catch((err) => res.status(505).send({ message: err.message }))
     .then((card) => res.status(201).send({ data: card }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
