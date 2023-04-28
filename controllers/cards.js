@@ -9,7 +9,10 @@ module.exports.getCards = (req, res) => {
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link })
-    .then((card) => res.status(201).send({ data: card }))
+    .then((card) => {
+      card.populate('owner');
+      res.status(201).send({ data: card });
+    })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
