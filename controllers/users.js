@@ -21,14 +21,16 @@ module.exports.createUser = (req, res) => {
 
 module.exports.getUserByID = (req, res) => {
   User.findById(req.params.userId)
+    .orFail(() => {
+      throw new Error('Не найден пользователь');
+    })
     .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: 'Не найден пользователь' });
-      }
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.message.includes('failed')) {
+      if (err.message === 'Не найден пользователь') {
+        res.status(404).send({ message: err.message });
+      } else if (err.message.includes('failed')) {
         res.status(400).send({ message: err.message });
       } else {
         res.status(500).send({ message: err.message });
