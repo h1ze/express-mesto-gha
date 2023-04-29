@@ -30,7 +30,7 @@ module.exports.getUserByID = (req, res) => {
     .catch((err) => {
       if (err.message === 'Запрашиваемый пользователь не найден') {
         res.status(404).send({ message: err.message });
-      } else if (err.name === 'ValidationError') {
+      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
         const message = Object.values(err.errors).map((error) => error.message).join('; ');
         res.status(400).send({ message });
       // } else if (err.message.includes('failed')) {
