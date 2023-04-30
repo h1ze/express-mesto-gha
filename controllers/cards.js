@@ -13,9 +13,11 @@ module.exports.createCard = (req, res) => {
     .then((card) => card.populate('owner'))
     .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         const message = Object.values(err.errors).map((error) => error.message).join('; ');
         res.status(400).send({ message });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: err.message });
       } else {
         res.status(500).send({ message: err.message });
       }
@@ -31,4 +33,53 @@ module.exports.deleteCardByID = (req, res) => {
       res.send({ message: 'Карточка успешно удалена' });
     })
     .catch((err) => res.status(500).send({ message: err.message }));
+};
+
+module.exports.likeCard = (req, res) => {
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+    { new: true },
+  )
+    .orFail(() => {
+      throw new Error('Не найдена карточка с таким ID');
+    })
+    .then(() => {
+      res.send({ message: 'Лайк добавлен' });
+    })
+    .catch((err) => {
+      if (err.message === 'Не найдена карточка с таким ID') {
+        res.status(404).send({ message: err.message });
+      } else if (err.name === 'ValidationError') {
+        const message = Object.values(err.errors).map((error) => error.message).join('; ');
+        res.status(400).send({ message });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: err.message });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
+};
+
+module.exports.dislikeCard = (req, res) => {
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $pull: { likes: req.user._id } }, // убрать _id из массива
+    { new: true },
+  )
+    .then(() => {
+      res.send({ message: 'Лайк удален' });
+    })
+    .catch((err) => {
+      if (err.message === 'Не найдена карточка с таким ID') {
+        res.status(404).send({ message: err.message });
+      } else if (err.name === 'ValidationError') {
+        const message = Object.values(err.errors).map((error) => error.message).join('; ');
+        res.status(400).send({ message });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: err.message });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
 };
