@@ -11,8 +11,9 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
-      if (err.message.includes('user validation failed')) {
-        res.status(400).send({ message: err.message });
+      if (err.name === 'ValidationError') {
+        const message = Object.values(err.errors).map((error) => error.message).join('; ');
+        res.status(400).send({ message });
       } else {
         res.status(500).send({ message: err.message });
       }
