@@ -28,10 +28,6 @@ app.use('*', (req, res) => {
   res.status(404).send({ message: 'Страница не существует' });
 });
 
-// app.use('*', (req, res) => {
-//   res.status(404).send({ message: 'Страница не найдена' });
-// });
-
 app.listen(PORT, () => {
   console.log(`Server stared on port ${PORT}!`);
 });

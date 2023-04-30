@@ -1,5 +1,5 @@
 const userRouter = require('express').Router();
-// const User = require('../models/user');
+
 const {
   createUser, getUserByID, getUsers, updateUser, updateAvatar,
 } = require('../controllers/users');
