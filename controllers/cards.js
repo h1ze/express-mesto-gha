@@ -27,12 +27,20 @@ module.exports.createCard = (req, res) => {
 module.exports.deleteCardByID = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then(() => {
-      // if (!user) {
-      //   res.status(404).send({ message: 'Не найден пользователь' });
-      // }
       res.send({ message: 'Карточка успешно удалена' });
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.message === 'Не найдена карточка с таким ID') {
+        res.status(404).send({ message: err.message });
+      } else if (err.name === 'ValidationError') {
+        const message = Object.values(err.errors).map((error) => error.message).join('; ');
+        res.status(400).send({ message });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: err.message });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
 };
 
 module.exports.likeCard = (req, res) => {
@@ -67,6 +75,9 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
+    .orFail(() => {
+      throw new Error('Не найдена карточка с таким ID');
+    })
     .then(() => {
       res.send({ message: 'Лайк удален' });
     })
