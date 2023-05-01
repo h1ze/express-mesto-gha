@@ -48,7 +48,6 @@ module.exports.updateUser = ((req, res) => {
   User.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true, // данные будут валидированы перед изменением
-    upsert: true, // если пользователь не найден, он будет создан
   })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
@@ -65,7 +64,6 @@ module.exports.updateAvatar = ((req, res) => {
   User.findByIdAndUpdate(req.user._id, { avatar }, {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true, // данные будут валидированы перед изменением
-    upsert: true, // если пользователь не найден, он будет создан
   })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
