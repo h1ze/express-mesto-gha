@@ -3,19 +3,19 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 30,
+    required: [true, 'Поле "name" должно быть заполнено'],
+    minlength: [2, 'Минимальная длина поля "name" - 2'],
+    maxlength: [30, 'Максимальная длина поля "name" - 30'],
   },
   about: {
     type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 30,
+    required: [true, 'Поле "about" должно быть заполнено'],
+    minlength: [2, 'Минимальная длина поля "about" - 2'],
+    maxlength: [30, 'Максимальная длина поля "about" - 30'],
   },
   avatar: {
     type: String,
-    required: true,
+    required: [true, 'Поле "avatar" должно быть заполнено'],
     validate: {
       validator: (value) => {
         (/^(http|https|ftp):\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)/i).test(value);
@@ -23,6 +23,6 @@ const userSchema = new mongoose.Schema({
       message: 'Некорректный URL',
     },
   },
-});
+}, { versionKey: false });
 
 module.exports = mongoose.model('user', userSchema);
