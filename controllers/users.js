@@ -46,6 +46,9 @@ module.exports.updateUser = ((req, res) => {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true, // данные будут валидированы перед изменением
   })
+    .orFail(() => {
+      throw new Error('Запрашиваемый пользователь не найден');
+    })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.message === 'Запрашиваемый пользователь не найден') {
@@ -67,6 +70,9 @@ module.exports.updateAvatar = ((req, res) => {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true, // данные будут валидированы перед изменением
   })
+    .orFail(() => {
+      throw new Error('Запрашиваемый пользователь не найден');
+    })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.message === 'Запрашиваемый пользователь не найден') {
