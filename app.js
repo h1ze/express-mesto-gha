@@ -6,6 +6,7 @@ const app = express();
 const { PORT = 3000 } = process.env;
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
+const { login, createUser } = require('./controllers/users');
 
 app.use(express.json());
 
@@ -27,6 +28,8 @@ app.use((req, res, next) => {
 
 app.use(userRouter);
 app.use(cardRouter);
+app.post('signin', login);
+app.post('signup', createUser);
 app.use('*', (req, res) => {
   res.status(404).send({ message: 'Страница не существует' });
 });
