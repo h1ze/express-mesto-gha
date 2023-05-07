@@ -7,6 +7,7 @@ const { PORT = 3000 } = process.env;
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
+const auth = require('./middlewares/auth');
 
 app.use(express.json());
 
@@ -18,18 +19,17 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.use(helmet());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '5d8b8592978f8bd833ca8133', // вставить ID созданного пользователя
-  };
-
-  next();
-});
-
-app.use(userRouter);
-app.use(cardRouter);
+// роуты, не требующие авторизации,
 app.post('signin', login);
 app.post('signup', createUser);
+
+// авторизация
+app.use(auth);
+
+// роуты, которым авторизация нужна
+app.use(userRouter);
+app.use(cardRouter);
+
 app.use('*', (req, res) => {
   res.status(404).send({ message: 'Страница не существует' });
 });

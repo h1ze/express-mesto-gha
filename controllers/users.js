@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const { generateToken } = require('../utils/token');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -9,6 +9,10 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
+  if (!req.body) {
+    res.status(400).send({ message: 'Invalid request body' });
+    return;
+  }
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -100,16 +104,10 @@ module.exports.login = (req, res) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
     // аутентификация успешна! пользователь в переменной user
-      const token = jwt.sign(
-        { _id: user._id },
-        'some-secret-key',
-        { expiresIn: '7d' }, // токен будет просрочен через 7 дней после создания
-      );
+      const token = generateToken({ _id: user._id });
       res.send({ token });
     })
     .catch((err) => {
-      res
-        .status(401)
-        .send({ message: err.message });
+      res.status(401).send({ message: err.message });
     });
 };
