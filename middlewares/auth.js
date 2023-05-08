@@ -8,6 +8,8 @@ module.exports = (req, res, next) => {
   if (!authorization || !authorization.startsWith('Bearer ')) {
     return res.status(401).send({ message: 'Необходима авторизация' });
   }
+
+  // Убираем Bearer, оставляем только строку с токеном
   const token = authorization.replace('Bearer ', '');
 
   // верифицируем токен
