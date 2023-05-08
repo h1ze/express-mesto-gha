@@ -5,6 +5,7 @@ const helmet = require('helmet');
 
 const app = express();
 const { PORT = 3000 } = process.env;
+const { errors } = require('celebrate');
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
@@ -34,6 +35,12 @@ app.use(cardRouter);
 app.use('*', (req, res) => {
   res.status(404).send({ message: 'Страница не существует' });
 });
+
+// обработчики ошибок
+
+app.use(errors()); // обработчик ошибок celebrate
+
+// централизованный обработчик ошибок
 
 app.use((err, req, res, next) => {
   // если у ошибки нет статуса, выставляем 500
