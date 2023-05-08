@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const path = require('path');
 const helmet = require('helmet');
 
 const app = express();
@@ -11,7 +12,7 @@ const auth = require('./middlewares/auth');
 
 app.use(express.json());
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true,
   // useCreateIndex: true,
   // useFindAndModify: false,
@@ -20,8 +21,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 app.use(helmet());
 
 // роуты, не требующие авторизации,
-app.post('signin', login);
-app.post('signup', createUser);
+app.post('/signin', login);
+app.post('/signup', createUser);
 
 // авторизация
 app.use(auth);
@@ -47,6 +48,8 @@ app.use((err, req, res, next) => {
 
   next();
 });
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(PORT, () => {
   console.log(`Server stared on port ${PORT}!`);
