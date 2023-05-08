@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const helmet = require('helmet');
+const { celebrate, Joi } = require('celebrate');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -23,7 +24,15 @@ app.use(helmet());
 
 // роуты, не требующие авторизации,
 app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    about: Joi.string().required().min(2).max(30),
+    avatar: Joi.string().required(),
+    email: Joi.string().required(),
+    password: Joi.string().required(),
+  }),
+}), createUser);
 
 // авторизация
 app.use(auth);
