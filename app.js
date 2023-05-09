@@ -28,7 +28,7 @@ app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern((/^(http|https|ftp):\/\/(([a-z0-9][a-z0-9_-]*)(.[a-z0-9][a-z0-9_-]*)+)\/(([a-z0-9][a-z0-9_-]*)(.[a-z0-9][a-z0-9_-]*)+)/i)),
+    avatar: Joi.string().pattern((/^(http|https|ftp):\/\/(([a-z0-9][a-z0-9_-]*)(\.[a-z0-9][a-z0-9_-]*)+)\/(([a-z0-9][a-z0-9_-]*)(\.[a-z0-9][a-z0-9_-]*)+)/i)),
     email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
