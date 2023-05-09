@@ -65,7 +65,7 @@ app.use((err, req, res, next) => {
   const { statusCode = 500 } = err;
   let error;
 
-  if (statusCode === 11000) {
+  if (err.code === 11000) {
     error = new ConflictError('Email должен быть уникальным');
   } else if (statusCode === 500) {
     error = new ServerError('На сервере произошла ошибка');
