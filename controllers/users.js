@@ -104,6 +104,23 @@ module.exports.getUserByID = (req, res, next) => {
     });
 };
 
+module.exports.getCurrentUser = (req, res, next) => {
+  User.findById(req.user._id)
+    .orFail(() => {
+      throw new NotFoundError('Запрашиваемый пользователь не найден');
+    })
+    .then((user) => {
+      res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Некорректные данные при запросе'));
+      } else {
+        next(err);
+      }
+    });
+};
+
 // module.exports.updateUser = ((req, res) => {
 //   // обновим имя найденного по _id пользователя
 //   const { name, about } = req.body;
