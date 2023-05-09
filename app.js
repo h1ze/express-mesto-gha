@@ -26,10 +26,9 @@ app.use(helmet());
 app.post('/signin', login);
 app.post('/signup', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    about: Joi.string().required().min(2).max(30),
-    // eslint-disable-next-line prefer-regex-literals
-    avatar: Joi.string().required().pattern(new RegExp('^(http|https|ftp)://(([a-z0-9][a-z0-9_-]*)(.[a-z0-9][a-z0-9_-]*)+)/(([a-z0-9][a-z0-9_-]*)(.[a-z0-9][a-z0-9_-]*)+)')),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().pattern((/^(http|https|ftp):\/\/(([a-z0-9][a-z0-9_-]*)(.[a-z0-9][a-z0-9_-]*)+)\/(([a-z0-9][a-z0-9_-]*)(.[a-z0-9][a-z0-9_-]*)+)/i)),
     email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
