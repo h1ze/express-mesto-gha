@@ -65,11 +65,11 @@ app.use((err, req, res, next) => {
 
   if (err.code === 11000) {
     error = new ConflictError('Email должен быть уникальным');
-  }
-  if (err.statusCode) {
+  } else if (err.statusCode) {
     error = err;
+  } else {
+    error = new ServerError('На сервере произошла ошибка');
   }
-  error = new ServerError('На сервере произошла ошибка');
 
   const { statusCode, message } = error;
   res.status(statusCode).send({ message });
