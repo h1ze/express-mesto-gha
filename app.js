@@ -68,5 +68,5 @@ app.use((err, req, res, next) => {
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(PORT, () => {
-  console.log(`Server stared on port ${PORT}!`);
+  console.log(`Server started on port ${PORT}!`);
 });
