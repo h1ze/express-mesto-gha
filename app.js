@@ -61,13 +61,15 @@ app.use(errors()); // обработчик ошибок celebrate
 // централизованный обработчик ошибок
 
 app.use((err, req, res, next) => {
-  // если у ошибки нет статуса, выставляем 500
-  const { statusCode = 500 } = err;
   let error;
 
   if (err.code === 11000) {
     error = new ConflictError('Email должен быть уникальным');
-  } else if (statusCode === 500) {
+  }
+  // если у ошибки нет статуса, выставляем 500
+  const { statusCode = 500 } = err;
+
+  if (statusCode === 500) {
     error = new ServerError('На сервере произошла ошибка');
   } else {
     error = err;
