@@ -11,6 +11,9 @@ const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const NotFoundError = require('./errors/not-found-err');
+const ConflictError = require('./errors/conflict-err');
+const ServerError = require('./errors/server-err');
 
 app.use(express.json());
 
@@ -47,8 +50,8 @@ app.use(auth);
 app.use(userRouter);
 app.use(cardRouter);
 
-app.use('*', (req, res) => {
-  res.status(404).send({ message: 'Страница не существует' });
+app.use('*', (req, res, next) => {
+  next(new NotFoundError('Страница не найдена'));
 });
 
 // обработчики ошибок
@@ -59,14 +62,18 @@ app.use(errors()); // обработчик ошибок celebrate
 
 app.use((err, req, res, next) => {
   // если у ошибки нет статуса, выставляем 500
-  const { statusCode = 500, message } = err;
+  const { statusCode = 500 } = err;
+  let error;
 
-  res.status(statusCode).send({
-    // проверяем статус и выставляем сообщение в зависимости от него
-    message: statusCode === 500
-      ? 'На сервере произошла ошибка'
-      : message,
-  });
+  if (statusCode === 11000) {
+    error = new ConflictError('Email должен быть уникальным');
+  } else if (statusCode === 500) {
+    error = new ServerError('На сервере произошла ошибка');
+  } else {
+    error = err;
+  }
+
+  res.status(statusCode).send({ message: error.message });
 
   next();
 });
