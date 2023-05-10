@@ -7,7 +7,9 @@ const ServerError = require('../errors/server-err');
 module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(next(new ServerError('На сервере произошла ошибка')));
+    .catch(() => {
+      next(new ServerError('На сервере произошла ошибка'));
+    });
 };
 
 module.exports.createCard = (req, res, next) => {
@@ -39,9 +41,11 @@ module.exports.deleteCardByID = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
-      } else {
+      }
+      if (!err.statusCode) {
         next(new ServerError('На сервере произошла ошибка'));
       }
+      next(err);
     });
 };
 
@@ -60,9 +64,11 @@ module.exports.likeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
-      } else {
+      }
+      if (!err.statusCode) {
         next(new ServerError('На сервере произошла ошибка'));
       }
+      next(err);
     });
 };
 
@@ -81,8 +87,10 @@ module.exports.dislikeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
-      } else {
+      }
+      if (!err.statusCode) {
         next(new ServerError('На сервере произошла ошибка'));
       }
+      next(err);
     });
 };

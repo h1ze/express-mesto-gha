@@ -9,7 +9,9 @@ const ServerError = require('../errors/server-err');
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(next(new ServerError('На сервере произошла ошибка')));
+    .catch(() => {
+      next(new ServerError('На сервере произошла ошибка'));
+    });
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -31,11 +33,14 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Некорректные данные при запросе'));
-      } else if (err.code === 11000) {
+      }
+      if (err.code === 11000) {
         next(new ConflictError('Email должен быть уникальным'));
-      } else {
+      }
+      if (!err.statusCode) {
         next(new ServerError('На сервере произошла ошибка'));
       }
+      next(err);
     });
 };
 
@@ -50,9 +55,11 @@ module.exports.getUserByID = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
-      } else {
+      }
+      if (!err.statusCode) {
         next(new ServerError('На сервере произошла ошибка'));
       }
+      next(err);
     });
 };
 
@@ -67,9 +74,11 @@ module.exports.getCurrentUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
-      } else {
+      }
+      if (!err.statusCode) {
         next(new ServerError('На сервере произошла ошибка'));
       }
+      next(err);
     });
 };
 
@@ -87,9 +96,11 @@ module.exports.updateUser = ((req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
-      } else {
+      }
+      if (!err.statusCode) {
         next(new ServerError('На сервере произошла ошибка'));
       }
+      next(err);
     });
 });
 
@@ -106,9 +117,11 @@ module.exports.updateAvatar = ((req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
-      } else {
+      }
+      if (!err.statusCode) {
         next(new ServerError('На сервере произошла ошибка'));
       }
+      next(err);
     });
 });
 
@@ -121,10 +134,9 @@ module.exports.login = (req, res, next) => {
       res.send({ token });
     })
     .catch((err) => {
-      if (err.statusCode === 401) {
-        next(err);
-      } else {
+      if (!err.statusCode) {
         next(new ServerError('На сервере произошла ошибка'));
       }
+      next(err);
     });
 };
