@@ -120,5 +120,11 @@ module.exports.login = (req, res, next) => {
       const token = generateToken({ _id: user._id });
       res.send({ token });
     })
-    .catch(next(new ServerError('На сервере произошла ошибка')));
+    .catch((err) => {
+      if (err.statusCode === 401) {
+        next(err);
+      } else {
+        next(new ServerError('На сервере произошла ошибка'));
+      }
+    });
 };
