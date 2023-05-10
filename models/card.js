@@ -12,7 +12,7 @@ const cardSchema = new mongoose.Schema({
     required: [true, 'Поле "link" должно быть заполнено'],
     validate: {
       validator: (value) => {
-        (/^(http|https|ftp):\/\/(([a-z0-9][a-z0-9_-]*)(\.[a-z0-9][a-z0-9_-]*)+)\/(([a-z0-9][a-z0-9_-]*)(\.[a-z0-9][a-z0-9_-]*)+)/i).test(value);
+        (/^(https?):\/\/(www\.)?(.+)\.(.+)/i).test(value);
       },
       message: 'Некорректный URL',
     },
