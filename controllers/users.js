@@ -3,11 +3,13 @@ const User = require('../models/user');
 const { generateToken } = require('../utils/token');
 const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-err');
+const ConflictError = require('../errors/conflict-err');
+const ServerError = require('../errors/server-err');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(next);
+    .catch(next(new ServerError('На сервере произошла ошибка')));
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -29,8 +31,10 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Некорректные данные при запросе'));
+      } else if (err.code === 11000) {
+        next(new ConflictError('Email должен быть уникальным'));
       } else {
-        next(err);
+        next(new ServerError('На сервере произошла ошибка'));
       }
     });
 };
@@ -47,7 +51,7 @@ module.exports.getUserByID = (req, res, next) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
       } else {
-        next(err);
+        next(new ServerError('На сервере произошла ошибка'));
       }
     });
 };
@@ -64,7 +68,7 @@ module.exports.getCurrentUser = (req, res, next) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
       } else {
-        next(err);
+        next(new ServerError('На сервере произошла ошибка'));
       }
     });
 };
@@ -84,7 +88,7 @@ module.exports.updateUser = ((req, res, next) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
       } else {
-        next(err);
+        next(new ServerError('На сервере произошла ошибка'));
       }
     });
 });
@@ -103,7 +107,7 @@ module.exports.updateAvatar = ((req, res, next) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
       } else {
-        next(err);
+        next(new ServerError('На сервере произошла ошибка'));
       }
     });
 });
@@ -116,5 +120,5 @@ module.exports.login = (req, res, next) => {
       const token = generateToken({ _id: user._id });
       res.send({ token });
     })
-    .catch(next);
+    .catch(next(new ServerError('На сервере произошла ошибка')));
 };

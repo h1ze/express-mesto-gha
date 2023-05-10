@@ -12,8 +12,6 @@ const cardRouter = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/not-found-err');
-const ConflictError = require('./errors/conflict-err');
-const ServerError = require('./errors/server-err');
 
 app.use(express.json());
 
@@ -61,17 +59,7 @@ app.use(errors()); // обработчик ошибок celebrate
 // централизованный обработчик ошибок
 
 app.use((err, req, res, next) => {
-  let error;
-
-  if (err.code === 11000) {
-    error = new ConflictError('Email должен быть уникальным');
-  } else if (err.statusCode) {
-    error = err;
-  } else {
-    error = new ServerError('На сервере произошла ошибка');
-  }
-
-  const { statusCode, message } = error;
+  const { statusCode, message } = err;
   res.status(statusCode).send({ message });
 
   next();
