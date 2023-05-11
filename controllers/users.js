@@ -12,9 +12,6 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  if (!req.body) {
-    throw new BadRequestError('Invalid request body');
-  }
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -32,9 +29,9 @@ module.exports.createUser = (req, res, next) => {
         next(new BadRequestError('Некорректные данные при запросе'));
       } else if (err.code === 11000) {
         next(new ConflictError('Email должен быть уникальным'));
+      } else {
+        next(err);
       }
-
-      next(err);
     });
 };
 
@@ -49,8 +46,9 @@ module.exports.getUserByID = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -65,11 +63,9 @@ module.exports.getCurrentUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
+      } else {
+        next(err);
       }
-      if (!err.statusCode) {
-        next(new ServerError('На сервере произошла ошибка'));
-      }
-      next(err);
     });
 };
 
@@ -87,11 +83,9 @@ module.exports.updateUser = ((req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
+      } else {
+        next(err);
       }
-      if (!err.statusCode) {
-        next(new ServerError('На сервере произошла ошибка'));
-      }
-      next(err);
     });
 });
 
@@ -108,11 +102,9 @@ module.exports.updateAvatar = ((req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
+      } else {
+        next(err);
       }
-      if (!err.statusCode) {
-        next(new ServerError('На сервере произошла ошибка'));
-      }
-      next(err);
     });
 });
 
@@ -124,10 +116,5 @@ module.exports.login = (req, res, next) => {
       const token = generateToken({ _id: user._id });
       res.send({ token });
     })
-    .catch((err) => {
-      if (!err.statusCode) {
-        next(new ServerError('На сервере произошла ошибка'));
-      }
-      next(err);
-    });
+    .catch(next);
 };

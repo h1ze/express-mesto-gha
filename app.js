@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const path = require('path');
 const helmet = require('helmet');
 const { celebrate, Joi } = require('celebrate');
 
@@ -60,9 +59,10 @@ app.use(errors()); // обработчик ошибок celebrate
 
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
-  res.status(statusCode).send({ message: statusCode === 500
-    ? 'На сервере произошла ошибка'
-    : message,
+  res.status(statusCode).send({
+    message: statusCode === 500
+      ? 'На сервере произошла ошибка'
+      : message,
   });
 
   next();
