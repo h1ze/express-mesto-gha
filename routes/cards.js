@@ -10,7 +10,7 @@ cardRouter.get('/cards', getCards);
 cardRouter.delete('/cards/:cardId', celebrate({
   // валидируем cardId
   params: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24),
+    cardId: Joi.string().alphanum().length(24).hex(),
   }),
 }), deleteCardByID);
 
@@ -24,14 +24,14 @@ cardRouter.post('/cards', celebrate({
 cardRouter.put('/cards/:cardId/likes', celebrate({
   // валидируем cardId
   params: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24),
+    cardId: Joi.string().alphanum().length(24).hex(),
   }),
 }), likeCard);
 
 cardRouter.delete('/cards/:cardId/likes', celebrate({
   // валидируем cardId
   params: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24),
+    cardId: Joi.string().alphanum().length(24).hex(),
   }),
 }), dislikeCard);
 
