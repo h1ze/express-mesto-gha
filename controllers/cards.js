@@ -2,14 +2,11 @@ const Card = require('../models/card');
 const ForbiddenError = require('../errors/forbidden-err');
 const BadRequestError = require('../errors/bad-request-err');
 const NotFoundError = require('../errors/not-found-err');
-const ServerError = require('../errors/server-err');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(() => {
-      next(new ServerError('На сервере произошла ошибка'));
-    });
+    .catch(next);
 };
 
 module.exports.createCard = (req, res, next) => {
@@ -21,7 +18,7 @@ module.exports.createCard = (req, res, next) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Некорректные данные при запросе'));
       } else {
-        next(new ServerError('На сервере произошла ошибка'));
+        next(err);
       }
     });
 };
@@ -36,16 +33,15 @@ module.exports.deleteCardByID = (req, res, next) => {
         throw new ForbiddenError('Нельзя удалить чужие карточки');
       }
       Card.deleteOne(card._id)
-        .then(() => res.send({ message: 'Карточка успешно удалена' }));
+        .then(() => res.send({ message: 'Карточка успешно удалена' }))
+        .catch(next);
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
+      } else {
+        next(err);
       }
-      if (!err.statusCode) {
-        next(new ServerError('На сервере произошла ошибка'));
-      }
-      next(err);
     });
 };
 
@@ -64,11 +60,9 @@ module.exports.likeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
+      } else {
+        next(err);
       }
-      if (!err.statusCode) {
-        next(new ServerError('На сервере произошла ошибка'));
-      }
-      next(err);
     });
 };
 
@@ -87,10 +81,8 @@ module.exports.dislikeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
+      } else {
+        next(err);
       }
-      if (!err.statusCode) {
-        next(new ServerError('На сервере произошла ошибка'));
-      }
-      next(err);
     });
 };

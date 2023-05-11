@@ -59,13 +59,14 @@ app.use(errors()); // обработчик ошибок celebrate
 // централизованный обработчик ошибок
 
 app.use((err, req, res, next) => {
-  const { statusCode, message } = err;
-  res.status(statusCode).send({ message });
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({ message: statusCode === 500
+    ? 'На сервере произошла ошибка'
+    : message,
+  });
 
   next();
 });
-
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}!`);

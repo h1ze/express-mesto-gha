@@ -4,14 +4,11 @@ const { generateToken } = require('../utils/token');
 const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-err');
 const ConflictError = require('../errors/conflict-err');
-const ServerError = require('../errors/server-err');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => {
-      next(new ServerError('На сервере произошла ошибка'));
-    });
+    .catch(next);
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -33,13 +30,10 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Некорректные данные при запросе'));
-      }
-      if (err.code === 11000) {
+      } else if (err.code === 11000) {
         next(new ConflictError('Email должен быть уникальным'));
       }
-      if (!err.statusCode) {
-        next(new ServerError('На сервере произошла ошибка'));
-      }
+
       next(err);
     });
 };
@@ -55,9 +49,6 @@ module.exports.getUserByID = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные при запросе'));
-      }
-      if (!err.statusCode) {
-        next(new ServerError('На сервере произошла ошибка'));
       }
       next(err);
     });
