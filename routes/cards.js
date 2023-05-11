@@ -1,5 +1,6 @@
 const cardRouter = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+const REG_EXP = require('../config/regular');
 
 const {
   createCard, deleteCardByID, getCards, likeCard, dislikeCard,
@@ -17,7 +18,7 @@ cardRouter.delete('/cards/:cardId', celebrate({
 cardRouter.post('/cards', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().pattern((/^(https?):\/\/(www\.)?(.+)\.(.+)/i)),
+    link: Joi.string().required().pattern(REG_EXP),
   }),
 }), createCard);
 

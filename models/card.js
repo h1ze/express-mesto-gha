@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const REG_EXP = require('../config/regular');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -12,7 +13,7 @@ const cardSchema = new mongoose.Schema({
     required: [true, 'Поле "link" должно быть заполнено'],
     validate: {
       validator: (value) => {
-        (/^(https?):\/\/(www\.)?(.+)\.(.+)/i).test(value);
+        REG_EXP.test(value);
       },
       message: 'Некорректный URL',
     },
